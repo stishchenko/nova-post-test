@@ -19,7 +19,41 @@
 
     <h4>Розрахунок вартості доставки з Одеси Новою Поштою</h4>
 
-    <form method="POST" action="{{ route('novapost.calculate') }}">
+    <form id="city-form" method="GET" action="{{ route('novapost.index') }}">
+        <select id="city" name="city" onchange="this.form.submit()">
+            <option value="">Select city</option>
+            @foreach($cities as $city)
+                <option
+                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}</option>
+            @endforeach
+        </select>
+    </form>
+
+    @if(request('city'))
+        <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate') }}">
+            @csrf
+            <select id="warehouse" name="warehouse">
+                <option value="">Select warehouse</option>
+                @foreach($warehouses as $warehouse)
+                    <option
+                        value="{{ $warehouse->ref }}" {{ request('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>
+                @endforeach
+            </select>
+            <div>
+                <input type="number" name="price" value="{{ request('price') }}">
+            </div>
+            <div>
+                <input type="submit" value="Calculate">
+            </div>
+        </form>
+    @endif
+
+    @if(request('total_cost'))
+        <p>Обрано {{ $city->description }}, {{ $warehouse->description }}. Обраховане значення
+            - {{ $total_cost }}.</p>
+    @endif
+
+    {{--<form method="POST" action="{{ route('novapost.calculate') }}">
         @csrf
         <div>
             <label for="city">Населений пункт:</label>
@@ -60,7 +94,7 @@
             Вартість доставки: {{ $total_cost }} грн.
             </span>
         </div>
-    @endif
+    @endif--}}
 </div>
 
 </body>
