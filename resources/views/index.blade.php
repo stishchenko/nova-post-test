@@ -24,7 +24,7 @@
             <option value="">Select city</option>
             @foreach($cities as $city)
                 <option
-                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}</option>
+                        value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}</option>
             @endforeach
         </select>
     </form>
@@ -36,7 +36,7 @@
                 <option value="">Select warehouse</option>
                 @foreach($warehouses as $warehouse)
                     <option
-                        value="{{ $warehouse->ref }}" {{ request('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>
+                            value="{{ $warehouse->ref }}" {{ request('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>
                 @endforeach
             </select>
             <div>
@@ -48,10 +48,10 @@
         </form>
     @endif
 
-    @if(request('total_cost'))
-        <p>Обрано {{ $city->description }}, {{ $warehouse->description }}. Обраховане значення
+    {{--@if(request('total_cost'))
+        <p>Обрано {{ $selectedCity->description }}, {{ $selectedWarehouse->description }}. Обраховане значення
             - {{ $total_cost }}.</p>
-    @endif
+    @endif--}}
 
     {{--<form method="POST" action="{{ route('novapost.calculate') }}">
         @csrf
