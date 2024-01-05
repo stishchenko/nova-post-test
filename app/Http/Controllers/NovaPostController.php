@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WarehouseRequest;
 use App\Models\City;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
@@ -13,33 +14,24 @@ class NovaPostController extends Controller
     {
         $cities = City::all();
         $warehouses = [];
-        $selectedCity = null;
-        $selectedWarehouse = null;
 
         if ($request->city) {
             $selectedCity = City::where('ref', $request->city)->first();
             $warehouses = Warehouse::where('city_ref', $selectedCity->ref)->get();
         }
 
-        if ($request->warehouse) {
-            $selectedWarehouse = Warehouse::where('ref', $request->warehouse)->first();
-        }
-
         return view('index', [
             'cities' => $cities,
-            'warehouses' => $warehouses,
-            'selectedCity' => $selectedCity,
-            'selectedWarehouse' => $selectedWarehouse,
+            'warehouses' => $warehouses
         ]);
     }
 
-    public function calculate(Request $request)
+    public function calculate(WarehouseRequest $request)
     {
         $warehouse = Warehouse::where('ref', $request->warehouse)->first();
         $city = City::where('ref', $warehouse->city_ref)->first();
         $price = (int)$request->price;
 
-        // Виконайте обрахунки та отримайте значення cost
         $total_cost = 0;
         if ($price < 1000) {
             $total_cost = 50 + ($price * 0.5);

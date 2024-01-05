@@ -24,29 +24,38 @@
             <option value="">Select city</option>
             @foreach($cities as $city)
                 <option
-                        value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}</option>
+                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}</option>
             @endforeach
         </select>
     </form>
 
-    @if(request('city'))
-        <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate') }}">
-            @csrf
-            <select id="warehouse" name="warehouse">
-                <option value="">Select warehouse</option>
-                @foreach($warehouses as $warehouse)
-                    <option
-                            value="{{ $warehouse->ref }}" {{ request('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>
-                @endforeach
-            </select>
-            <div>
-                <input type="number" name="price" value="{{ request('price') }}">
-            </div>
-            <div>
-                <input type="submit" value="Calculate">
-            </div>
-        </form>
-    @endif
+    {{--@if(request('city'))--}}
+
+    <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate') }}" novalidate>
+        @csrf
+        <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>
+            <option value="">Select warehouse</option>
+            @foreach($warehouses as $warehouse)
+                <option
+                    value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>
+            @endforeach
+        </select>
+        <div>
+            <input type="number" name="price" value="{{ old('price') }}" {{ request('city') ? '' : 'disabled' }}>
+            @error('warehouse')
+            <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+        <div>
+            <input type="submit" value="Calculate" {{ request('city') ? '' : 'disabled' }}>
+            @error('price')
+            <span class="text-danger">{{ $message }}</span>
+            @enderror
+        </div>
+    </form>
+    {{--
+        @endif
+    --}}
 
     {{--@if(request('total_cost'))
         <p>Обрано {{ $selectedCity->description }}, {{ $selectedWarehouse->description }}. Обраховане значення
