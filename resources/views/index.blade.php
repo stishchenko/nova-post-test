@@ -24,7 +24,11 @@
             <option value="">Select city</option>
             @foreach($cities as $city)
                 <option
-                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}</option>
+                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}
+                    @if(!preg_match('/[\(\)]/', $city->description))
+                        ({{ $city->area_description }} обл.)
+                    @endif
+                </option>
             @endforeach
         </select>
     </form>
@@ -34,7 +38,8 @@
     <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate') }}" novalidate>
         @csrf
         <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>
-            <option value="">Select warehouse</option>
+            <option
+                value="">{{ count($warehouses) === 0 ? 'No warehouses' : 'Select warehouse' }}</option>
             @foreach($warehouses as $warehouse)
                 <option
                     value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>

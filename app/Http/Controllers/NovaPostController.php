@@ -16,8 +16,7 @@ class NovaPostController extends Controller
         $warehouses = [];
 
         if ($request->city) {
-            $selectedCity = City::where('ref', $request->city)->first();
-            $warehouses = Warehouse::where('city_ref', $selectedCity->ref)->get();
+            $warehouses = Warehouse::where('city_ref', $request->city)->get();
         }
 
         return view('index', [

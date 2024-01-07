@@ -21,7 +21,12 @@
 
     <div>
         <p>
-            Ви обрали: населений пункт - {{ $city->description }}, відділення - {{ $warehouse->description }}.
+            Ви обрали: населений пункт - {{ $city->settlement_type_description }}
+            @if(!preg_match('/[\(\)]/', $city->description))
+                {{ $city->description }} ({{ $city->area_description }} обл.),
+            @else
+                {{ $city->description }},
+            @endif відділення - {{ $warehouse->description }}.
             Вартість доставки: {{ $total_cost }} грн.
         </p>
     </div>
