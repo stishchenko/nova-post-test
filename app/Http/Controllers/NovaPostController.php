@@ -6,12 +6,14 @@ use App\Http\Requests\WarehouseRequest;
 use App\Models\City;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class NovaPostController extends Controller
 {
 
     public function index(Request $request)
     {
+        App::setLocale('ua');
         $cities = City::all();
         $warehouses = [];
 
@@ -21,12 +23,14 @@ class NovaPostController extends Controller
 
         return view('index', [
             'cities' => $cities,
-            'warehouses' => $warehouses
+            'warehouses' => $warehouses,
+            'locale' => app()->getLocale()
         ]);
     }
 
     public function calculate(WarehouseRequest $request)
     {
+        App::setLocale('ru');
         $warehouse = Warehouse::where('ref', $request->warehouse)->first();
         $city = City::where('ref', $warehouse->city_ref)->first();
         $price = (int)$request->price;
@@ -41,7 +45,8 @@ class NovaPostController extends Controller
         return view('result')->with([
             'city' => $city,
             'warehouse' => $warehouse,
-            'total_cost' => $total_cost
+            'total_cost' => $total_cost,
+            'locale' => app()->getLocale()
         ]);
     }
 

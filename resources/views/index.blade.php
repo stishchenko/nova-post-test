@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,16 +17,30 @@
 <body>
 <div class="container">
 
-    <h4>Розрахунок вартості доставки з Одеси Новою Поштою</h4>
+    {{--@if($errors->any())
+            <?php
+            dd($errors->messages());
+            ?>
+    @endif--}}
+
+    <div>
+        <select id="language" name="language">
+            <option value="ua" selected>UA</option>
+            <option value="ru">RU</option>
+        </select>
+    </div>
+
+    <h4>{{ __('count_cost_header') }}</h4>
 
     <form id="city-form" method="GET" action="{{ route('novapost.index') }}">
         <select id="city" name="city" onchange="this.form.submit()">
-            <option value="">Select city</option>
+            <option value="">{{ __('select_city') }}</option>
             @foreach($cities as $city)
                 <option
-                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>{{ $city->description }}
+                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>
+                    {{ $city->getDescriptionByLocale($locale) }}
                     @if(!preg_match('/[\(\)]/', $city->description))
-                        ({{ $city->area_description }} обл.)
+                        ({{ $city->getAreaByLocale($locale) }} обл.)
                     @endif
                 </option>
             @endforeach
@@ -37,27 +51,32 @@
 
     <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate') }}" novalidate>
         @csrf
-        <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>
-            <option
-                value="">{{ count($warehouses) === 0 ? 'No warehouses' : 'Select warehouse' }}</option>
-            @foreach($warehouses as $warehouse)
+        <div>
+            <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>
                 <option
-                    value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->description }}</option>
-            @endforeach
-        </select>
+                    value="">{{ count($warehouses) === 0 ? __('no_warehouses') : __('select_warehouse') }}</option>
+                @foreach($warehouses as $warehouse)
+                    <option
+                        value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->getDescriptionByLocale($locale) }}</option>
+                @endforeach
+            </select>
+            @error('warehouse')
+            <span class="text-danger">{{ __($message) }}</span>
+            @enderror
+        </div>
         <div>
             <input type="number" name="price" value="{{ old('price') }}" {{ request('city') ? '' : 'disabled' }}>
-            @error('warehouse')
-            <span class="text-danger">{{ $message }}</span>
+            @error('price')
+            @foreach($errors->get('price') as $message)
+                <span class="text-danger">{{ __($message) }}</span>
+            @endforeach
             @enderror
         </div>
         <div>
-            <input type="submit" value="Calculate" {{ request('city') ? '' : 'disabled' }}>
-            @error('price')
-            <span class="text-danger">{{ $message }}</span>
-            @enderror
+            <input type="submit" value="{{ __('Calculate') }}" {{ request('city') ? '' : 'disabled' }}>
         </div>
     </form>
+
     {{--
         @endif
     --}}

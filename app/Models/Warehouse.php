@@ -13,4 +13,9 @@ class Warehouse extends Model
     {
         return $this->belongsTo(City::class);
     }
+
+    public function getDescriptionByLocale(string $locale): string
+    {
+        return $locale === 'ru' ? $this->description_ru : $this->description;
+    }
 }

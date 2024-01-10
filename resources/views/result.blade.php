@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,22 +17,24 @@
 <body>
 <div class="container">
 
-    <h4>Розрахунок вартості доставки з Одеси Новою Поштою</h4>
+    <h4>{{ __('count_cost_header') }}</h4>
 
     <div>
         <p>
-            Ви обрали: населений пункт - {{ $city->settlement_type_description }}
+            {{ __('your_choice') }} {{ __('settlement', ['settlement' => $city->getSettlementTypeByLocale($locale)]) }}
             @if(!preg_match('/[\(\)]/', $city->description))
-                {{ $city->description }} ({{ $city->area_description }} обл.),
+                {{ __('city_with_area',
+                    ['city' => $city->getDescriptionByLocale($locale),
+                     'area' => $city->getAreaByLocale($locale)]) }},
             @else
-                {{ $city->description }},
-            @endif відділення - {{ $warehouse->description }}.
-            Вартість доставки: {{ $total_cost }} грн.
+                {{ $city->getDescriptionByLocale($locale) }},
+            @endif {{ __('warehouse', ['warehouse' => $warehouse->getDescriptionByLocale($locale)]) }}.
+            {{ __('total_cost', ['total_cost' => $total_cost]) }}
         </p>
     </div>
 
     <div>
-        <a href="{{ route('novapost.index') }}">Повернутися до вибору міста та відділення</a>
+        <a href="{{ route('novapost.index') }}">{{ __('back_to_index') }}</a>
     </div>
 </div>
 

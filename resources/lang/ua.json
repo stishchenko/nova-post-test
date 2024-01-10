@@ -1,0 +1,19 @@
+{
+    "count_cost_header": "Розрахунок вартості доставки з Одеси Новою Поштою",
+    "select_city": "Оберіть місто",
+    "select_warehouse": "Оберіть відділення",
+    "no_warehouses": "Відділення відсутні",
+    "Calculate": "Розрахувати",
+
+    "your_choice": "Ви обрали:",
+    "settlement": "населений пункт - :settlement",
+    "city_with_area": ":city (:area обл.)",
+    "warehouse": "відділення - :warehouse",
+    "total_cost": "Вартість доставки: :total_cost грн.",
+    "back_to_index": "Повернутися до вибору міста та відділення",
+
+    "The warehouse field is required.": "Вибір відділення є обов'язковим.",
+    "The price field is required.": "Вказання ціни є обов'язковим.",
+    "The price field must be an integer.": "Ціна має бути цілим числом.",
+    "The price field must be at least 0.": "Ціна не може бути від'ємною."
+}
