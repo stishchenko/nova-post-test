@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\App;
 class NovaPostController extends Controller
 {
 
-    public function index(Request $request)
+    public function index($locale, Request $request)
     {
-        App::setLocale('ua');
+        App::setLocale($locale);
         $cities = City::all();
         $warehouses = [];
 
@@ -28,9 +28,9 @@ class NovaPostController extends Controller
         ]);
     }
 
-    public function calculate(WarehouseRequest $request)
+    public function calculate($locale, WarehouseRequest $request)
     {
-        App::setLocale('ru');
+        App::setLocale($locale);
         $warehouse = Warehouse::where('ref', $request->warehouse)->first();
         $city = City::where('ref', $warehouse->city_ref)->first();
         $price = (int)$request->price;

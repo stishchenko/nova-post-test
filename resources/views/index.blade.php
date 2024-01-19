@@ -17,22 +17,22 @@
 <body>
 <div class="container">
 
-    {{--@if($errors->any())
-            <?php
-            dd($errors->messages());
-            ?>
-    @endif--}}
-
     <div>
-        <select id="language" name="language">
-            <option value="ua" selected>UA</option>
-            <option value="ru">RU</option>
+        <select id="locale-select">
+            <option value="ua" {{$locale === 'ua' ? 'selected' : ''}}>UA</option>
+            <option value="ru" {{$locale === 'ru' ? 'selected' : ''}}>RU</option>
         </select>
     </div>
 
+    <script>
+        document.getElementById('locale-select').addEventListener('change', function () {
+            window.location.href = '/novapost/' + this.value;
+        });
+    </script>
+
     <h4>{{ __('count_cost_header') }}</h4>
 
-    <form id="city-form" method="GET" action="{{ route('novapost.index') }}">
+    <form id="city-form" method="GET" action="{{ route('novapost.index', ['locale'=>app()->getLocale()]) }}">
         <select id="city" name="city" onchange="this.form.submit()">
             <option value="">{{ __('select_city') }}</option>
             @foreach($cities as $city)
@@ -49,7 +49,8 @@
 
     {{--@if(request('city'))--}}
 
-    <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate') }}" novalidate>
+    <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate', ['locale'=>app()->getLocale()]) }}"
+          novalidate>
         @csrf
         <div>
             <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>

@@ -34,7 +34,7 @@
     </div>
 
     <div>
-        <a href="{{ route('novapost.index') }}">{{ __('back_to_index') }}</a>
+        <a href="{{ route('novapost.index', ['locale'=>app()->getLocale()]) }}">{{ __('back_to_index') }}</a>
     </div>
 </div>
 
