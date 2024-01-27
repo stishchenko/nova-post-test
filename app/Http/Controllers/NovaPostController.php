@@ -19,12 +19,17 @@ class NovaPostController extends Controller
 
         if ($request->city) {
             $warehouses = Warehouse::where('city_ref', $request->city)->get();
+        } elseif (session('selected_city')) {
+            $warehouses = Warehouse::where('city_ref', session('selected_city')->ref)->get();
         }
 
         return view('index', [
             'cities' => $cities,
             'warehouses' => $warehouses,
-            'locale' => app()->getLocale()
+            'locale' => app()->getLocale(),
+            'selected_city' => session('selected_city'),
+            'selected_warehouse' => session('selected_warehouse'),
+            'total_cost' => session('total_cost')
         ]);
     }
 
@@ -42,69 +47,11 @@ class NovaPostController extends Controller
             $total_cost = 50 + ($price * 0.3);
         }
 
-        return view('result')->with([
-            'city' => $city,
-            'warehouse' => $warehouse,
-            'total_cost' => $total_cost,
-            'locale' => app()->getLocale()
-        ]);
+        return redirect()->route('novapost.index', ['locale' => app()->getLocale()])
+            ->with([
+                'selected_city' => $city,
+                'selected_warehouse' => $warehouse,
+                'total_cost' => $total_cost
+            ]);
     }
-
-    /*public function result(Request $request)
-    {
-        $city = $request->city;
-        $warehouse = $request->warehouse;
-        $total_cost = $request->total_cost;
-
-        return view('result', [
-            'city' => $city,
-            'warehouse' => $warehouse,
-            'total_cost' => $total_cost
-        ]);
-    }*/
-
-
-    /*public function index()
-    {
-        $cities = City::all();
-        $warehouses = Warehouse::all();
-
-        return view('index', ['cities' => $cities, 'warehouses' => $warehouses]);
-    }
-
-    public function calculate(Request $request)
-    {
-        $data = $request->validate(
-            [
-                'city' => 'required',
-                'warehouse' => 'required',
-                'price' => 'required|integer'
-            ]
-        );
-
-        $price = (int)$data['price'];
-        $total_cost = 0;
-        if ($price < 1000) {
-            $total_cost = 50 + ($price * 0.5);
-        } elseif ($price < 3000) {
-            $total_cost = 50 + ($price * 0.3);
-        }
-
-        $cities = City::all();
-        $warehouses = Warehouse::all();
-        $my_city = City::where('ref', $data['city'])->first();
-        $my_warehouse = Warehouse::where('ref', $data['warehouse'])->first();
-
-        return view('index', ['cities' => $cities, 'warehouses' => $warehouses])
-            ->with(
-                [
-                    'old_city_ref' => $data['city'],
-                    'old_wh_ref' => $data['warehouse'],
-                    'old_price' => $price,
-                    'my_city' => $my_city,
-                    'my_warehouse' => $my_warehouse,
-                    'total_cost' => $total_cost
-                ]
-            );
-    }*/
 }

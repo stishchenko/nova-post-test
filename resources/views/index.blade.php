@@ -37,7 +37,7 @@
             <option value="">{{ __('select_city') }}</option>
             @foreach($cities as $city)
                 <option
-                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>
+                    value="{{ $city->ref }}" {{ request('city') == $city->ref || (isset($selected_city) && $selected_city->ref == $city->ref) ? 'selected' : '' }}>
                     {{ $city->getDescriptionByLocale($locale) }}
                     @if(!preg_match('/[\(\)]/', $city->description))
                         ({{ $city->getAreaByLocale($locale) }} обл.)
@@ -47,18 +47,17 @@
         </select>
     </form>
 
-    {{--@if(request('city'))--}}
-
     <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate', ['locale'=>app()->getLocale()]) }}"
           novalidate>
         @csrf
         <div>
-            <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>
+            <select id="warehouse" name="warehouse" {{ request('city') || isset($selected_city) ? '' : 'disabled' }}>
                 <option
                     value="">{{ count($warehouses) === 0 ? __('no_warehouses') : __('select_warehouse') }}</option>
                 @foreach($warehouses as $warehouse)
                     <option
-                        value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->getDescriptionByLocale($locale) }}</option>
+                        value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref || (isset($selected_warehouse) && $selected_warehouse->ref == $warehouse->ref) ? 'selected' : '' }}
+                    >{{ $warehouse->getDescriptionByLocale($locale) }}</option>
                 @endforeach
             </select>
             @error('warehouse')
@@ -66,7 +65,8 @@
             @enderror
         </div>
         <div>
-            <input type="number" name="price" value="{{ old('price') }}" {{ request('city') ? '' : 'disabled' }}>
+            <input type="number" name="price"
+                   value="{{ old('price') }}" {{ request('city') || isset($selected_city) ? '' : 'disabled' }}>
             @error('price')
             @foreach($errors->get('price') as $message)
                 <span class="text-danger">{{ __($message) }}</span>
@@ -74,61 +74,26 @@
             @enderror
         </div>
         <div>
-            <input type="submit" value="{{ __('Calculate') }}" {{ request('city') ? '' : 'disabled' }}>
+            <input type="submit"
+                   value="{{ __('Calculate') }}" {{ request('city') || isset($selected_city) ? '' : 'disabled' }}>
         </div>
-    </form>
-
-    {{--
-        @endif
-    --}}
-
-    {{--@if(request('total_cost'))
-        <p>Обрано {{ $selectedCity->description }}, {{ $selectedWarehouse->description }}. Обраховане значення
-            - {{ $total_cost }}.</p>
-    @endif--}}
-
-    {{--<form method="POST" action="{{ route('novapost.calculate') }}">
-        @csrf
-        <div>
-            <label for="city">Населений пункт:</label>
-            <select id="city" name="city">
-                <option value=''>Оберіть місто</option>
-                @foreach($cities as $city)
-                    <option value="{{ $city->ref }}"
-                            @if (isset($old_city_ref) && $old_city_ref == $city->ref) selected @endif>{{ $city->description }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="warehouse">Відділення:</label>
-            <select id="warehouse" name="warehouse">
-                <option value=''>Оберіть відділення</option>
-                @foreach($warehouses as $warehouse)
-                    <option value="{{ $warehouse->ref }}"
-                            @if (isset($old_wh_ref) && $old_wh_ref == $warehouse->ref) selected @endif>{{ $warehouse->description }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="price">Вартість посилки:</label>
-            <input type="number" id="price" name="price" placeholder="1000"
-                   <?php if (isset($old_price)): ?>
-                   value="{{ $old_price }}"
-                <?php endif; ?>
-            >
-
-        </div>
-        <button type="submit" id="calculate">Розрахувати вартість</button>
     </form>
 
     @if(isset($total_cost))
         <div>
-            <span>
-            Ви обрали: населений пункт - {{ $my_city->description }}, відділення - {{ $my_warehouse->description }}.
-            Вартість доставки: {{ $total_cost }} грн.
-            </span>
+            <p>
+                {{ __('your_choice') }} {{ __('settlement', ['settlement' => $selected_city->getSettlementTypeByLocale($locale)]) }}
+                @if(!preg_match('/[\(\)]/', $selected_city->description))
+                    {{ __('city_with_area',
+                        ['city' => $selected_city->getDescriptionByLocale($locale),
+                         'area' => $selected_city->getAreaByLocale($locale)]) }},
+                @else
+                    {{ $selected_city->getDescriptionByLocale($locale) }},
+                @endif {{ __('warehouse', ['warehouse' => $selected_warehouse->getDescriptionByLocale($locale)]) }}.
+                {{ __('total_cost', ['total_cost' => $total_cost]) }}
+            </p>
         </div>
-    @endif--}}
+    @endif
 </div>
 
 </body>
