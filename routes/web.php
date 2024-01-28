@@ -17,6 +17,9 @@ use App\Http\Controllers\NovaPostController;
 Route::get('/', function () {
     return redirect('/novapost/ua');
 });
+Route::get('/novapost', function () {
+    return redirect('/novapost/ua');
+});
 
 Route::get('/novapost/{locale}', [NovaPostController::class, 'index'])->name('novapost.index');
 Route::post('/novapost/calculate/{locale}', [NovaPostController::class, 'calculate'])->name('novapost.calculate');

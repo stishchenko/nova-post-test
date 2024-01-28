@@ -12,16 +12,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <style>
+        .form-select:focus, .form-control:focus {
+            box-shadow: none;
+        }
+    </style>
 </head>
 
 <body>
 <div class="container">
 
-    <div>
-        <select id="locale-select">
-            <option value="ua" {{$locale === 'ua' ? 'selected' : ''}}>UA</option>
-            <option value="ru" {{$locale === 'ru' ? 'selected' : ''}}>RU</option>
-        </select>
+    <div class="row">
+        <div class="col-1">
+            <select id="locale-select" class="form-select">
+                <option value="ua" {{$locale === 'ua' ? 'selected' : ''}}>UA</option>
+                <option value="ru" {{$locale === 'ru' ? 'selected' : ''}}>RU</option>
+            </select>
+        </div>
     </div>
 
     <script>
@@ -30,105 +37,62 @@
         });
     </script>
 
-    <h4>{{ __('count_cost_header') }}</h4>
+    <h4 class="mt-3">{{ __('count_cost_header') }}</h4>
 
-    <form id="city-form" method="GET" action="{{ route('novapost.index', ['locale'=>app()->getLocale()]) }}">
-        <select id="city" name="city" onchange="this.form.submit()">
-            <option value="">{{ __('select_city') }}</option>
-            @foreach($cities as $city)
-                <option
-                    value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>
-                    {{ $city->getDescriptionByLocale($locale) }}
-                    @if(!preg_match('/[\(\)]/', $city->description))
-                        ({{ $city->getAreaByLocale($locale) }} обл.)
-                    @endif
-                </option>
-            @endforeach
-        </select>
-    </form>
-
-    {{--@if(request('city'))--}}
-
-    <form id="warehouse-form" method="POST" action="{{ route('novapost.calculate', ['locale'=>app()->getLocale()]) }}"
-          novalidate>
-        @csrf
-        <div>
-            <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }}>
-                <option
-                    value="">{{ count($warehouses) === 0 ? __('no_warehouses') : __('select_warehouse') }}</option>
-                @foreach($warehouses as $warehouse)
-                    <option
-                        value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->getDescriptionByLocale($locale) }}</option>
-                @endforeach
-            </select>
-            @error('warehouse')
-            <span class="text-danger">{{ __($message) }}</span>
-            @enderror
+    <div class="row mt-3">
+        <div class="col-4">
+            <form id="city-form" method="GET" action="{{ route('novapost.index', ['locale'=>app()->getLocale()]) }}">
+                <select id="city" name="city" onchange="this.form.submit()" class="form-select">
+                    <option value="">{{ __('select_city') }}</option>
+                    @foreach($cities as $city)
+                        <option
+                            value="{{ $city->ref }}" {{ request('city') == $city->ref ? 'selected' : '' }}>
+                            {{ $city->getDescriptionByLocale($locale) }}
+                            @if(!preg_match('/[\(\)]/', $city->description))
+                                ({{ $city->getAreaByLocale($locale) }} обл.)
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+            </form>
         </div>
-        <div>
-            <input type="number" name="price" value="{{ old('price') }}" {{ request('city') ? '' : 'disabled' }}>
-            @error('price')
-            @foreach($errors->get('price') as $message)
-                <span class="text-danger">{{ __($message) }}</span>
-            @endforeach
-            @enderror
+    </div>
+    <div class="row mt-3">
+        <div class="col-4">
+            <form id="warehouse-form" method="POST"
+                  action="{{ route('novapost.calculate', ['locale'=>app()->getLocale()]) }}"
+                  novalidate>
+                @csrf
+                <div>
+                    <select id="warehouse" name="warehouse" {{ request('city') ? '' : 'disabled' }} class="form-select">
+                        <option
+                            value="">{{ count($warehouses) === 0 ? __('no_warehouses') : __('select_warehouse') }}</option>
+                        @foreach($warehouses as $warehouse)
+                            <option
+                                value="{{ $warehouse->ref }}" {{ old('warehouse') == $warehouse->ref ? 'selected' : '' }}>{{ $warehouse->getDescriptionByLocale($locale) }}</option>
+                        @endforeach
+                    </select>
+                    @error('warehouse')
+                    <span class="text-danger">{{ __($message) }}</span>
+                    @enderror
+                </div>
+                <div>
+                    <input type="number" name="price" value="{{ old('price') }}" placeholder="1000"
+                           {{ request('city') ? '' : 'disabled' }} class="form-control mt-3">
+                    @error('price')
+                    @foreach($errors->get('price') as $message)
+                        <span class="text-danger">{{ __($message) }}</span>
+                        <br>
+                    @endforeach
+                    @enderror
+                </div>
+                <div>
+                    <input type="submit" value="{{ __('Calculate') }}"
+                           {{ request('city') ? '' : 'disabled' }} class="mt-3 btn btn-outline-dark">
+                </div>
+            </form>
         </div>
-        <div>
-            <input type="submit" value="{{ __('Calculate') }}" {{ request('city') ? '' : 'disabled' }}>
-        </div>
-    </form>
-
-    {{--
-        @endif
-    --}}
-
-    {{--@if(request('total_cost'))
-        <p>Обрано {{ $selectedCity->description }}, {{ $selectedWarehouse->description }}. Обраховане значення
-            - {{ $total_cost }}.</p>
-    @endif--}}
-
-    {{--<form method="POST" action="{{ route('novapost.calculate') }}">
-        @csrf
-        <div>
-            <label for="city">Населений пункт:</label>
-            <select id="city" name="city">
-                <option value=''>Оберіть місто</option>
-                @foreach($cities as $city)
-                    <option value="{{ $city->ref }}"
-                            @if (isset($old_city_ref) && $old_city_ref == $city->ref) selected @endif>{{ $city->description }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="warehouse">Відділення:</label>
-            <select id="warehouse" name="warehouse">
-                <option value=''>Оберіть відділення</option>
-                @foreach($warehouses as $warehouse)
-                    <option value="{{ $warehouse->ref }}"
-                            @if (isset($old_wh_ref) && $old_wh_ref == $warehouse->ref) selected @endif>{{ $warehouse->description }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="price">Вартість посилки:</label>
-            <input type="number" id="price" name="price" placeholder="1000"
-                   <?php if (isset($old_price)): ?>
-                   value="{{ $old_price }}"
-                <?php endif; ?>
-            >
-
-        </div>
-        <button type="submit" id="calculate">Розрахувати вартість</button>
-    </form>
-
-    @if(isset($total_cost))
-        <div>
-            <span>
-            Ви обрали: населений пункт - {{ $my_city->description }}, відділення - {{ $my_warehouse->description }}.
-            Вартість доставки: {{ $total_cost }} грн.
-            </span>
-        </div>
-    @endif--}}
+    </div>
 </div>
 
 </body>
