@@ -1,3 +1,4 @@
+Before start, be sure that you have php, MySQL and composer.
 To start project after cloning from GitHub follow next instruction:
 1. Open terminal and go to project folder
 2. Run command `composer install`
